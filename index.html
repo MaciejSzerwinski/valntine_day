@@ -54,12 +54,31 @@
             background-color: red;
             color: white;
         }
+        /* Styl dla napisu po kliknięciu */
+        .valentine-message {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 50px;
+            font-weight: bold;
+            color: red;
+        }
+        /* Styl dla fajerwerków */
+        canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <img src="misiu.jpg" width="150" alt="Miś">
-        <h1>Chcesz zostać Olu moją walentynką?</h1>
+        <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/teddy-1296904_960_720.png" width="150" alt="Miś">
+        <h1>Chcesz zostać moją walentynką?</h1>
         <div>
             <button id="yes">Tak</button>
             <button id="no">Nie</button>
@@ -67,7 +86,9 @@
     </div>
     <div class="hearts"></div>
     
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.3.5"></script>
+    <!-- Fajerwerki -->
+    <canvas id="fireworks"></canvas>
+
     <script>
         let noButton = document.getElementById("no");
         let yesButton = document.getElementById("yes");
@@ -85,8 +106,8 @@
         });
 
         yesButton.addEventListener("click", function() {
-            document.body.innerHTML = `<h1 style='color:red; font-size:40px;'>Jesteś moją walentynką ❤</h1>`;
-            startConfetti();
+            document.body.innerHTML = `<h1 class='valentine-message'>Jesteś moją walentynką ❤</h1>`;
+            startFireworks();
         });
 
         function createHeart() {
@@ -100,22 +121,46 @@
         }
         setInterval(createHeart, 300);
 
-        function startConfetti() {
-            let duration = 5 * 1000;
-            let end = Date.now() + duration;
-            (function frame() {
-                confetti({
-                    particleCount: 5,
-                    spread: 100,
-                    startVelocity: 30,
-                    colors: ['#ff0000', '#ff1493', '#ff69b4', '#ffb6c1'],
-                    origin: { x: Math.random(), y: Math.random() - 0.2 }
-                });
+        // Funkcja do animacji fajerwerków
+        function startFireworks() {
+            const canvas = document.getElementById("fireworks");
+            const ctx = canvas.getContext("2d");
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
 
-                if (Date.now() < end) {
-                    requestAnimationFrame(frame);
+            let particles = [];
+            function createFirework(x, y) {
+                let count = 100;
+                while (count--) {
+                    particles.push({
+                        x: x,
+                        y: y,
+                        radius: Math.random() * 4 + 1,
+                        color: `hsl(${Math.random() * 360}, 100%, 60%)`,
+                        velocityX: (Math.random() - 0.5) * 5,
+                        velocityY: (Math.random() - 0.5) * 5,
+                        alpha: 1
+                    });
                 }
-            })();
+            }
+            function animateFireworks() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                particles.forEach((p, i) => {
+                    p.x += p.velocityX;
+                    p.y += p.velocityY;
+                    p.alpha -= 0.02;
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.globalAlpha = p.alpha;
+                    ctx.fill();
+                    if (p.alpha <= 0) particles.splice(i, 1);
+                });
+                requestAnimationFrame(animateFireworks);
+            }
+            canvas.addEventListener("click", (e) => createFirework(e.clientX, e.clientY));
+            createFirework(canvas.width / 2, canvas.height / 2);
+            animateFireworks();
         }
     </script>
 </body>
