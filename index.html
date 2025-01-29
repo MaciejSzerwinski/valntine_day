@@ -1,18 +1,104 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="pl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yes/No Question</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Walentynki</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Arial, sans-serif;
+            background-color: #ffdde1;
+            overflow: hidden;
+        }
+        .container {
+            position: relative;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+        .hearts {
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100%;
+            height: 100vh;
+            pointer-events: none;
+        }
+        .heart {
+            position: absolute;
+            color: red;
+            font-size: 20px;
+            animation: float 5s linear infinite;
+        }
+        @keyframes float {
+            0% { transform: translateY(100vh) scale(1); opacity: 1; }
+            100% { transform: translateY(-10vh) scale(1.5); opacity: 0; }
+        }
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            border: none;
+            cursor: pointer;
+            border-radius: 10px;
+        }
+        #yes {
+            background-color: green;
+            color: white;
+        }
+        #no {
+            background-color: red;
+            color: white;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Do you like programming?</h1>
-        <button onclick="handleAnswer('yes')">Yes</button>
-        <button onclick="handleAnswer('no')">No</button>
-        <p id="response"></p>
+        <img src="https://cdn.pixabay.com/photo/2016/03/31/19/56/teddy-1296904_960_720.png" width="150" alt="Miś">
+        <h1>Chcesz zostać moją walentynką?</h1>
+        <div>
+            <button id="yes">Tak</button>
+            <button id="no">Nie</button>
+        </div>
     </div>
-    <script src="script.js"></script>
+    <div class="hearts"></div>
+    <script>
+        let noButton = document.getElementById("no");
+        let yesButton = document.getElementById("yes");
+        let count = 0;
+        noButton.addEventListener("click", function() {
+            count++;
+            if (count < 3) {
+                this.style.transform = `scale(${1 + count * 0.5})`;
+            } else {
+                this.style.display = "none";
+                yesButton.style.fontSize = "50px";
+                yesButton.style.padding = "20px 40px";
+            }
+        });
+        yesButton.addEventListener("click", function() {
+            document.body.innerHTML = `<h1 style='color:red; font-size:40px;'>Jesteś moją walentynką ❤</h1>`;
+            confetti();
+        });
+        function createHeart() {
+            let heart = document.createElement("div");
+            heart.className = "heart";
+            heart.innerHTML = "❤";
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 3 + 2 + "s";
+            document.querySelector(".hearts").appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(createHeart, 300);
+        function confetti() {
+            for (let i = 0; i < 100; i++) {
+                setTimeout(() => createHeart(), i * 30);
+            }
+        }
+    </script>
 </body>
 </html>
